@@ -21,3 +21,9 @@ MKINSTALLS+=$(addprefix $(MODULE_LOCATION)/,$(MKSRCS) ../latest/utils.mk)
 ifdef INSTALL_MODULE_TOP_RULE
 $(INSTALL_MODULE_TOP_RULE) $(MKINSTALLS)
 endif
+
+.PHONY: instdebug
+
+instdebug:
+	echo "LIBVERSION $(LIBVERSION)"
+	echo "MODULE_LOCATION $(MODULE_LOCATION)"

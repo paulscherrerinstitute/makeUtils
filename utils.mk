@@ -56,11 +56,25 @@ ifndef T_A
 INSTALL_EPICS_TOP_RULE=install::
 endif
 
+ifndef GIT
+GIT=git
+endif
+
+GIT_VERSION:=$(shell ( $(GIT) --version >& /dev/null && $(GIT) --version | sed -e 's/\([^0-9]*\)\([0-9]\+[.][0-9]\+\).*/\2/' ) || echo 0.0)
+
+define BC_EVALUATE
+$(shell echo '$1' | bc -l)
+endef
+
+# git on some platforms is too old
+ifneq ($(call BC_EVALUATE,$(GIT_VERSION) >= 1.8),1)
+GIT=/opt/psi/Tools/git/2.22.0/bin/git
+endif
 
 # Assemble some info from git
-GIT_COMMIT=$(shell git rev-parse HEAD)
-GIT_BRANCH=$(shell git rev-parse --symbolic-full-name HEAD@{upstream})
-GIT_REMOTE=$(shell git ls-remote --get-url)
+GIT_COMMIT=$(shell $(GIT) rev-parse HEAD)
+GIT_BRANCH=$(shell $(GIT) rev-parse --symbolic-full-name HEAD@{upstream})
+GIT_REMOTE=$(shell $(GIT) ls-remote --get-url)
 
 #
 # Create a README.gitinfo file in the installation area
