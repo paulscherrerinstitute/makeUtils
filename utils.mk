@@ -1,3 +1,13 @@
+#
+# Include this file after including 'driver.makefile'
+#
+# include $(EPICS_MODULES)/makeUtils/latest/utils.mk
+#
+# instead of 'latest' you may substitute a specific
+# version.
+#
+
+#
 # Find highest version in a path
 #
 # call with two arguments: prefix, suffix
@@ -19,23 +29,56 @@ define LATEST_VERSION
 $(patsubst $(addsuffix /,$1)%,%,$(patsubst %$(addprefix /,$2),%,$(call LATEST_VERSION_PATH,$1,$2)))
 endef
 
+ifndef INSTALL
+INSTALL=install
+endif
+
+# If you want to install something into
+# the module's top area (e.g., docs) then
+# use
+#
+# ifdef INSTALL_MODULE_TOP_RULE
+# $(INSTALL_MODULE_TOP_RULE) $(myinstalldeps)
+# endif
+#
+# If you want to install into the top of
+# every EPICS version use INSTALL_EPICS_TOP_RULE
+#
+# Finally, to install into the arch-dependent
+# directory use INSTALLRULE (provided by driver.makefile)
+#
+
+ifndef EPICSVERSION
+INSTALL_MODULE_TOP_RULE=install::
+endif
+
+ifndef T_A
+INSTALL_EPICS_TOP_RULE=install::
+endif
+
+
 # Assemble some info from git
 GIT_COMMIT=$(shell git rev-parse HEAD)
 GIT_BRANCH=$(shell git rev-parse --symbolic-full-name HEAD@{upstream})
 GIT_REMOTE=$(shell git ls-remote --get-url)
 
-# Adding 
 #
-# INSTALLS += $(MODULE_GITINFO)
-#
-# creates a README.gitinfo file in the installation area
+# Create a README.gitinfo file in the installation area
 #
 
-ifndef EPICSVERSION
-install:: install-gitinfo
+ifdef INSTALL_MODULE_TOP_RULE
+$(INSTALL_MODULE_TOP_RULE) install-gitinfo
 endif
 
+# User may set this to an empty value before including utils.mk
+# in order to avoid installing the gitinfo file
+#
+# MODULE_GITINFO:=
+# MODULE_GITINFO+=
+
+ifndef MODULE_GITINFO
 MODULE_GITINFO = $(MODULE_LOCATION)/README.gitinfo
+endif
 
 %.gitinfo: .FORCE
 	$(RM) $@
@@ -50,3 +93,4 @@ install-gitinfo: $(MODULE_GITINFO)
 
 .PHONY: .FORCE install-gitinfo
 
+-include $(USER_EXTENSION_MK)

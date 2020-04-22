@@ -1,13 +1,21 @@
+HERE:=$(dir $(lastword $(MAKEFILE_LIST)))
+
 include /ioc/tools/driver.makefile
-include $(HOME)/epics/modules/makeUtils/latest/utils.mk
+include $(HERE)utils.mk
 
-BUILDCLASSES=Linux
+MKSRCS+=utils.mk
 
-ARCH_FILTER=RHEL%
+$(MODULE_LOCATION)/%.mk: %.mk
+	$(INSTALL) -D -m 0644 $< $@
 
-install-gitinfo: foo
+$(MODULE_LOCATION)/../latest/utils.mk: latest-utils.mk
+	$(INSTALL) -D -m 0644 $< $@
 
-.PHONY: foo
+MKINSTALLS+=$(addprefix $(MODULE_LOCATION)/,$(MKSRCS) ../latest/utils.mk)
 
-foo:
-	echo ##########################################################
+#BUILDCLASSES=Linux
+#ARCH_FILTER=RHEL%
+
+ifdef INSTALL_MODULE_TOP_RULE
+$(INSTALL_MODULE_TOP_RULE) $(MKINSTALLS)
+endif
