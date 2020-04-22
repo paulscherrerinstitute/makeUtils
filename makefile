@@ -11,6 +11,8 @@ $(MODULE_LOCATION)/%.mk: %.mk
 $(MODULE_LOCATION)/../latest/utils.mk: latest-utils.mk
 	$(INSTALL) -D -m 0644 $< $@
 
+VERSIONCHECKFILES+=$(wildcard *.mk)
+
 MKINSTALLS+=$(addprefix $(MODULE_LOCATION)/,$(MKSRCS) ../latest/utils.mk)
 
 #BUILDCLASSES=Linux

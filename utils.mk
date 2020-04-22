@@ -81,6 +81,7 @@ MODULE_GITINFO = $(MODULE_LOCATION)/README.gitinfo
 endif
 
 %.gitinfo: .FORCE
+	mkdir -p $(MODULE_LOCATION)
 	$(RM) $@
 	echo "Git Commit:"     >> $@
 	echo "  $(GIT_COMMIT)" >> $@
