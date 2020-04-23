@@ -1,6 +1,13 @@
 HERE:=$(dir $(lastword $(MAKEFILE_LIST)))
 
+# We can't add to VERSIONCHECKFILES after including driver.makefile
+# because this variable is already expanded in 'driver.makefile'
+# when checking the version.
+# We can't predefine it here either because driver.makefile initializes
+# to empty. Thus, we use this hack to make sure our makefile snippets
+# are checked...
 SOURCES_hack=$(wildcard *.mk)
+
 include /ioc/tools/driver.makefile
 include $(HERE)utils.mk
 

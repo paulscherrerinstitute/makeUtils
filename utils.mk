@@ -63,14 +63,19 @@ endif # ifndef MAKE_PASS
 # are included in the numerical value. Levels are 'separated'
 # by factors of 100.
 #
-# E.g., $(call CONVERT_VERSION_NUMBER, 1.2.3, 2)
+# E.g., $(call CONVERT_VERSION_TO_NUMBER, 1.2.3, 2)
 # yields:
 #
 #    102
 #
-define CONVERT_VERSION_NUMBER
-$(shell echo '$1' | awk 'BEGIN{ FS="." }/^([0-9]+[.])*[0-9]+$$/{ v = 0; m =NF < $2 ? NF : $2; for (i=1; i<=m; i=i+1) v = 100*v + $$i; for (   ; i<= $2;  i=i+1) v = 100*v; print v; }')
+define CONVERT_VERSION_TO_NUMBER
+$(shell echo '$1' | awk 'BEGIN{ FS="." }/^([0-9]+[.])*[0-9]+$$/{ v = 0; m = NF < $2 ? NF : $2; for (i=1; i<=m; i=i+1) v = 100*v + $$i; for (   ; i<= $2;  i=i+1) v = 100*v; print v; }')
 endef
+
+define CONVERT_VERSION_TO_LIST
+$(shell echo '$1' | awk 'BEGIN{ FS="." }/^([0-9]+[.])*[0-9]+$$/{ m = NF < $2 ? NF : $2; for (i=1; i<=m; i=i+1) printf("%i ",$$i); for (   ; i<= $2;  i=i+1) printf("0 "); printf("\n"); }')
+endef
+
 
 # If you want to install something into
 # the module's top area (e.g., docs) then
@@ -146,22 +151,46 @@ endif
 install-gitinfo: $(MODULE_GITINFO)
 
 ifneq ($($(PRJ)_VERSION),$(LIBVERSION))
-$(warning '$($(PRJ)_VERSION)' '$(LIBVERSION)')
+#debugging: $(warning '$($(PRJ)_VERSION)' '$(LIBVERSION)')
 FORCE_VERSION_FILE_REGEN=.FORCE
 endif
 
+ifndef $(PRJ)_VERSION_AS_LIST
+$(PRJ)_VERSION_AS_LIST:=$(call CONVERT_VERSION_TO_LIST,$(LIBVERSION),3)
+endif
+
+ifndef $(PRJ)_VERSION_MAJOR
+$(PRJ)_VERSION_MAJOR:=$(or $(word 1, $($(PRJ)_VERSION_AS_LIST)),99)
+endif
+ifndef $(PRJ)_VERSION_MINOR
+$(PRJ)_VERSION_MINOR:=$(or $(word 2, $($(PRJ)_VERSION_AS_LIST)),0)
+endif
+ifndef $(PRJ)_VERSION_PATCH
+$(PRJ)_VERSION_PATCH:=$(or $(word 2, $($(PRJ)_VERSION_AS_LIST)),0)
+endif
+
+# A single number is easier to compare...
+#
+# (major * 100 + minor)*100 + patch
+#
+ifndef $(PRJ)_VERSION_NUMERIC
+$(PRJ)_VERSION_NUMERIC:=$(call CONVERT_VERSION_TO_NUMBER,$($(PRJ)_VERSION_MAJOR).$($(PRJ)_VERSION_MINOR).$($(PRJ)_VERSION_PATCH),3)
+endif
+
+
 $(PRJ)_version.mk: $(FORCE_VERSION_FILE_REGEN)
 
-# Give a 'test' version the number 99.0.0.0
 #
-# If you use 'xx_MANUAL_VERSION_NUM' then you are
-# on your own for making sure the version file is
-# up-to-date.
+# Give a 'test' version the number 99.0.0
 #
 %_version.mk:
+	echo "# Automatically generated file; do not modify" >> $@ 
 	$(RM) $@
-	echo '$(patsubst %_version.mk,%,$@)_VERSION_NUM=$(or $($(patsubst %_version.mk,%,$@)_MANUAL_VERSION_NUM),$(call CONVERT_VERSION_NUMBER,$(LIBVERSION),4),99000000)'     >> $@
-	echo '$(patsubst %_version.mk,%,$@)_VERSION=$(LIBVERSION)' >>$@
+	echo "$(PRJ)_VERSION:=$(LIBVERSION)" >> $@
+	echo "$(PRJ)_VERSION_MAJOR:=$($(PRJ)_VERSION_MAJOR)" >> $@
+	echo "$(PRJ)_VERSION_MINOR:=$($(PRJ)_VERSION_MINOR)" >> $@
+	echo "$(PRJ)_VERSION_PATCH:=$($(PRJ)_VERSION_PATCH)" >> $@
+	echo "$(PRJ)_VERSION_NUMERIC:=$($(PRJ)_VERSION_NUMERIC)" >> $@
 
 .PHONY: .FORCE install-gitinfo
 
