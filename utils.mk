@@ -69,9 +69,8 @@ endif # ifndef MAKE_PASS
 #    102
 #
 define CONVERT_VERSION_NUMBER
-$(shell echo '$1' | awk 'BEGIN{ FS="." }/^([0-9]+[.])*[0-9]+$$/{ v = 0; m =$$NF < $2 ? $$NF : $2; for (i=1; i<=m; i=i+1) v = 100*v + i; for (   ; i<= $2;  i=i+1) v = 100*v; print v; }')
+$(shell echo '$1' | awk 'BEGIN{ FS="." }/^([0-9]+[.])*[0-9]+$$/{ v = 0; m =NF < $2 ? NF : $2; for (i=1; i<=m; i=i+1) v = 100*v + i; for (   ; i<= $2;  i=i+1) v = 100*v; print v; }')
 endef
-
 
 # If you want to install something into
 # the module's top area (e.g., docs) then
