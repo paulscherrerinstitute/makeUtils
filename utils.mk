@@ -92,11 +92,11 @@ endef
 # directory use INSTALLRULE (provided by driver.makefile)
 #
 
-ifndef EPICSVERSION
+ifeq ($(MAKE_PASS),1)
 INSTALL_MODULE_TOP_RULE=install::
 endif
 
-ifndef T_A
+ifeq ($(MAKE_PASS),2)
 INSTALL_EPICS_TOP_RULE=install::
 endif
 
