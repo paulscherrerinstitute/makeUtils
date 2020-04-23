@@ -175,7 +175,7 @@ _BLANK_SPACE+=
 	echo "$(PRJ)_VERSION_MAJOR:=$(word 1, $($(PRJ)_VERSION_AS_LIST))" >> $@
 	echo "$(PRJ)_VERSION_MINOR:=$(word 2, $($(PRJ)_VERSION_AS_LIST))" >> $@
 	echo "$(PRJ)_VERSION_PATCH:=$(word 3, $($(PRJ)_VERSION_AS_LIST))" >> $@
-	echo "$(PRJ)_VERSION_NUMERIC:=$(call CONVERT_VERSION_TO_NUMBER,$(subst $(_BLANK_SPACE),.,$($(PRJ)_VERSION_AS_LIST)), $(words $($(PRJ)_VERSION_AS_LIST)))" >> $@
+	echo "$(PRJ)_VERSION_NUMERIC:=$(call CONVERT_VERSION_TO_NUMBER,$(subst $(_BLANK_SPACE),.,$(strip $($(PRJ)_VERSION_AS_LIST))), $(words $($(PRJ)_VERSION_AS_LIST)))" >> $@
 
 .PHONY: .FORCE install-gitinfo
 
