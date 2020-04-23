@@ -146,10 +146,23 @@ endif
 
 install-gitinfo: $(MODULE_GITINFO)
 
+ifneq ($($(PRJ)_VERSION),$(LIBVERSION))
+$(warning '$($(PRJ)_VERSION)' '$(LIBVERSION)')
+FORCE_VERSION_FILE_REGEN=.FORCE
+endif
+
+$(PRJ)_version.mk: $(FORCE_VERSION_FILE_REGEN)
+
 # Give a 'test' version the number 99.0.0.0
-%_version.mk: utils.mk
+#
+# If you use 'xx_MANUAL_VERSION_NUM' then you are
+# on your own for making sure the version file is
+# up-to-date.
+#
+%_version.mk:
 	$(RM) $@
-	echo 'MAKEUTILS_VERSION=$(or $(MAKEUTILS_MANUAL_VERSION),$(call CONVERT_VERSION_NUMBER,$(LIBVERSION),4),99000000)' >> $@
+	echo '$(patsubst %_version.mk,%,$@)_VERSION_NUM=$(or $($(patsubst %_version.mk,%,$@)_MANUAL_VERSION_NUM),$(call CONVERT_VERSION_NUMBER,$(LIBVERSION),4),99000000)'     >> $@
+	echo '$(patsubst %_version.mk,%,$@)_VERSION=$(LIBVERSION)' >>$@
 
 .PHONY: .FORCE install-gitinfo
 
