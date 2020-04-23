@@ -156,29 +156,14 @@ FORCE_VERSION_FILE_REGEN=.FORCE
 endif
 
 ifndef $(PRJ)_VERSION_AS_LIST
-$(PRJ)_VERSION_AS_LIST:=$(call CONVERT_VERSION_TO_LIST,$(LIBVERSION),3)
-endif
-
-ifndef $(PRJ)_VERSION_MAJOR
-$(PRJ)_VERSION_MAJOR:=$(or $(word 1, $($(PRJ)_VERSION_AS_LIST)),99)
-endif
-ifndef $(PRJ)_VERSION_MINOR
-$(PRJ)_VERSION_MINOR:=$(or $(word 2, $($(PRJ)_VERSION_AS_LIST)),0)
-endif
-ifndef $(PRJ)_VERSION_PATCH
-$(PRJ)_VERSION_PATCH:=$(or $(word 2, $($(PRJ)_VERSION_AS_LIST)),0)
-endif
-
-# A single number is easier to compare...
-#
-# (major * 100 + minor)*100 + patch
-#
-ifndef $(PRJ)_VERSION_NUMERIC
-$(PRJ)_VERSION_NUMERIC:=$(call CONVERT_VERSION_TO_NUMBER,$($(PRJ)_VERSION_MAJOR).$($(PRJ)_VERSION_MINOR).$($(PRJ)_VERSION_PATCH),3)
+$(PRJ)_VERSION_AS_LIST:=$(or $(call CONVERT_VERSION_TO_LIST,$(LIBVERSION),3),99 0 0)
 endif
 
 
 $(PRJ)_version.mk: $(FORCE_VERSION_FILE_REGEN)
+
+_BLANK_SPACE=
+_BLANK_SPACE+=
 
 #
 # Give a 'test' version the number 99.0.0
@@ -187,10 +172,10 @@ $(PRJ)_version.mk: $(FORCE_VERSION_FILE_REGEN)
 	echo "# Automatically generated file; do not modify" >> $@ 
 	$(RM) $@
 	echo "$(PRJ)_VERSION:=$(LIBVERSION)" >> $@
-	echo "$(PRJ)_VERSION_MAJOR:=$($(PRJ)_VERSION_MAJOR)" >> $@
-	echo "$(PRJ)_VERSION_MINOR:=$($(PRJ)_VERSION_MINOR)" >> $@
-	echo "$(PRJ)_VERSION_PATCH:=$($(PRJ)_VERSION_PATCH)" >> $@
-	echo "$(PRJ)_VERSION_NUMERIC:=$($(PRJ)_VERSION_NUMERIC)" >> $@
+	echo "$(PRJ)_VERSION_MAJOR:=$(word 1, $($(PRJ)_VERSION_AS_LIST))" >> $@
+	echo "$(PRJ)_VERSION_MINOR:=$(word 2, $($(PRJ)_VERSION_AS_LIST))" >> $@
+	echo "$(PRJ)_VERSION_PATCH:=$(word 3, $($(PRJ)_VERSION_AS_LIST))" >> $@
+	echo "$(PRJ)_VERSION_NUMERIC:=$(call CONVERT_VERSION_TO_NUMBER,$(subst $(_BLANK_SPACE),.,$($(PRJ)_VERSION_AS_LIST)), $(words $($(PRJ)_VERSION_AS_LIST)))" >> $@
 
 .PHONY: .FORCE install-gitinfo
 
