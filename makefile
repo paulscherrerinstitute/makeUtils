@@ -11,20 +11,26 @@ SOURCES_hack=$(wildcard *.mk)
 include /ioc/tools/driver.makefile
 include $(HERE)utils.mk
 
-MKSRCS+=utils.mk makeUtils_version.mk
+MKSRCS+=utils.mk make-subdirs.mk
+
+MKSRCS_ALL+=$(MKSRCS) makeUtils_version.mk
 
 $(MODULE_LOCATION)/%.mk: %.mk
 	$(INSTALL) -D -m 0644 $< $@
 
-$(MODULE_LOCATION)/../latest/utils.mk: latest-utils.mk
+$(MODULE_LOCATION)/../latest/include-latest.mk: include-latest.mk
 	$(INSTALL) -D -m 0644 $< $@
 
-MKINSTALLS+=$(addprefix $(MODULE_LOCATION)/,$(MKSRCS) ../latest/utils.mk)
+$(MODULE_LOCATION)/../latest/%.mk: $(MODULE_LOCATION)/../latest/include-latest.mk
+	$(RM) $@
+	ln -s include-latest.mk $@
+
+MKINSTALLS+=$(addprefix $(MODULE_LOCATION)/,$(MKSRCS_ALL) $(addprefix ../latest/,$(MKSRCS) include-latest.mk))
 
 #BUILDCLASSES=Linux
 #ARCH_FILTER=RHEL%
 
-$(PRJ)_version.mk: utils.mk
+$(PRJ)_version.mk: $(MKSRCS)
 
 ifdef INSTALL_MODULE_TOP_RULE
 $(INSTALL_MODULE_TOP_RULE) $(MKINSTALLS)
