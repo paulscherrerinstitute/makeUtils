@@ -169,8 +169,8 @@ _BLANK_SPACE+=
 # Give a 'test' version the number 99.0.0
 #
 %_version.mk:
-	echo "# Automatically generated file; do not modify" >> $@ 
 	$(RM) $@
+	echo "# Automatically generated file; do not modify" >> $@ 
 	echo "$(PRJ)_VERSION:=$(LIBVERSION)" >> $@
 	echo "$(PRJ)_VERSION_MAJOR:=$(word 1, $($(PRJ)_VERSION_AS_LIST))" >> $@
 	echo "$(PRJ)_VERSION_MINOR:=$(word 2, $($(PRJ)_VERSION_AS_LIST))" >> $@
