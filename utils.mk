@@ -73,7 +73,7 @@ $(shell echo '$1' | awk 'BEGIN{ FS="." }/^([0-9]+[.])*[0-9]+$$/{ v = 0; m = NF <
 endef
 
 define CONVERT_VERSION_TO_LIST
-$(shell echo '$1' | awk 'BEGIN{ FS="." }/^([0-9]+[.])*[0-9]+$$/{ m = NF < $2 ? NF : $2; for (i=1; i<=m; i=i+1) printf("%i ",$$i); for (   ; i<= $2;  i=i+1) printf("0 "); printf("\n"); }')
+$(shell echo '$1' | awk 'BEGIN{ FS="." }/^([0-9]+[.])*[0-9]+$$/{ m = NF < $2 ? NF : $2; sep=""; for (i=1; i<=m; i=i+1) { printf("%s%i ",sep,$$i); sep=" "; } for (   ; i<= $2;  i=i+1) { printf("%s0",sep); sep=" "; } printf("\n"); }')
 endef
 
 
