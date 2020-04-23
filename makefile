@@ -44,9 +44,9 @@ check-makepass:
 	@if [ -z "$(MAKE_PASS)" ] ; then echo "ERROR: MAKE_PASS undefined"; exit 1; fi
 	@echo "MAKE_PASS: $(MAKE_PASS)"
 
-.PHONY: instdebug check-makepass
+clean:: clean-local
 
+clean-local:
+	$(RM) makeUtils_version.mk
 
-foo:
-	echo '$(LIBVERSION)'
-	echo '$(call CONVERT_VERSION_NUMBER,test,4)'
+.PHONY: instdebug check-makepass clean clean-local
