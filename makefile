@@ -28,7 +28,7 @@ $(MODULE_LOCATION)/../latest/%.mk: $(MODULE_LOCATION)/../latest/include-latest.m
 MKINSTALLS+=$(addprefix $(MODULE_LOCATION)/,$(MKSRCS_ALL) $(addprefix ../latest/,$(MKSRCS) include-latest.mk))
 
 #BUILDCLASSES=Linux
-#ARCH_FILTER=RHEL%
+#ARCH_FILTER=RHEL7%
 
 $(PRJ)_version.mk: $(MKSRCS)
 
@@ -50,7 +50,7 @@ check-makepass:
 	@if [ -z "$(MAKE_PASS)" ] ; then echo "ERROR: MAKE_PASS undefined"; exit 1; fi
 	@echo "MAKE_PASS: $(MAKE_PASS)"
 
-clean:: clean-local
+#clean:: clean-local
 
 clean-local:
 	$(RM) makeUtils_version.mk

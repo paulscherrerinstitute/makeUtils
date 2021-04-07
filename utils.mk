@@ -139,7 +139,6 @@ MODULE_GITINFO = $(MODULE_LOCATION)/README.gitinfo
 endif
 
 %.gitinfo: .FORCE
-	mkdir -p $(MODULE_LOCATION)
 	$(RM) $@
 	echo "Git Commit:"     >> $@
 	echo "  $(GIT_COMMIT)" >> $@
@@ -149,6 +148,15 @@ endif
 	echo "  $(GIT_REMOTE)" >> $@
 
 install-gitinfo: $(MODULE_GITINFO)
+
+$(MODULE_GITINFO): O.Common_Top/README.gitinfo
+	@echo "Installing git-info"
+	$(INSTALL) -D -m444 $^ $@
+
+O.Common_Top/README.gitinfo: O.Common_Top
+
+O.Common_Top:
+	mkdir $@
 
 ifneq ($($(PRJ)_VERSION),$(LIBVERSION))
 #debugging: $(warning '$($(PRJ)_VERSION)' '$(LIBVERSION)')
