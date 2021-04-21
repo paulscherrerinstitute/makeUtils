@@ -8,6 +8,8 @@ HERE:=$(dir $(lastword $(MAKEFILE_LIST)))
 # are checked...
 SOURCES_hack=$(wildcard *.mk)
 
+EXCLUDE_VERSIONS=3.13
+
 include /ioc/tools/driver.makefile
 include $(HERE)utils.mk
 
